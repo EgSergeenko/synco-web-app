@@ -20,7 +20,7 @@ def load_image(image_name):
 def app():
     st.set_page_config(
         layout='wide',
-        page_title='Reactions prediction',
+        page_title='SynCo',
         page_icon=Image.open('images/favicon.ico'),
     )
     st.markdown(
@@ -71,7 +71,6 @@ def show_prediction_form(container, reactions):
         )
 
         separator = container.markdown('---')
-
 
         for percent_complete in range(100):
             time.sleep(0.01)
