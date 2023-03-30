@@ -165,7 +165,7 @@ def show_prediction(container, reaction):
     if isinstance(reaction['reactants_II'], float):
         columns[1].image(load_image('arrow'))
         columns[2].image(
-            load_image(reaction['reactants']),
+            load_image(reaction['products']),
             caption=reaction['products_smiles'].upper(),
         )
     else:
