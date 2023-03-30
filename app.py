@@ -212,8 +212,8 @@ def show_contacts(container):
     container.header('Contact us')
     columns = container.columns([3, 2, 2])
     text_column, image_columns = columns[0], columns[1:]
-    image_columns[0].image(load_image('itmo'), width=350)
-    image_columns[1].image(load_image('scamt'), width=350)
+    image_columns[0].image(load_image('itmo'), width=300)
+    image_columns[1].image(load_image('scamt'), width=300)
     text_column.text(
         """
         Anastasiia Orlova       orlova@scamt-itmo.ru
