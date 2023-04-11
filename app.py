@@ -1,9 +1,28 @@
+import base64
 import os
 import time
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 from PIL import Image
+
+PRODUCT_MAPPING = {
+    'CAS number': {
+        '119-61-9': 'Diphenyl ketone',
+        '134-81-6': 'Diphenylethanedione',
+        '486-25-9': '9H-Fluoren-9-one',
+        '576-26-1': '2,6-Dimethylphenol',
+        '92-93-3': '4-Nitrobiphenyl',
+    },
+    'SMILES': {
+        'O=C(C1CCCCC1)C2CCCCC2': 'Diphenyl ketone',
+        'O=C(C1CCCCC1)C(=O)C2CCCCC2': 'Diphenylethanedione',
+        'O=C1C2CCCCC2C3CCCCC13': '9H-Fluoren-9-one',
+        'CC1CCCC(C)C1O': '2,6-Dimethylphenol',
+        '[O-][N+](=O)C1CCC(CC1)C2CCCCC2': '4-Nitrobiphenyl',
+    },
+}
 
 
 @st.cache_data
@@ -15,6 +34,12 @@ def load_data():
 def load_image(image_name):
     image_path = os.path.join('images', '{0}.png'.format(image_name))
     return Image.open(image_path)
+
+
+@st.cache_data
+def load_image_bytes(img_path):
+    image_bytes = Path(img_path).read_bytes()
+    return base64.b64encode(image_bytes).decode()
 
 
 def app():
@@ -30,9 +55,223 @@ def app():
     reactions = load_data()
     main_column = st.columns([1, 5, 1])[1]
     show_description(main_column)
+    show_benefits(main_column)
     show_prediction_form(main_column, reactions)
+    show_contact_form(main_column)
+    show_team(main_column)
     show_contacts(main_column)
     add_scripts()
+
+
+def show_contact_form(container):
+    container.header('Learn more')
+    left_column, right_column = container.columns(2)
+
+    with container.form(key='contact_form'):
+        left_column.text_input(
+            'Name',
+            placeholder='Your name',
+        )
+        left_column.text_input(
+            'Industry',
+            placeholder='Chemistry',
+        )
+        right_column.text_input(
+            'Organization',
+            placeholder='ITMO University',
+        )
+        right_column.text_input(
+            'Research field',
+            placeholder='Organic synthesis',
+        )
+        # container.text_input(
+        #     'Country code and phone number',
+        #     placeholder='+799999999'
+        # )
+        container.text_input(
+            'E-mail',
+            placeholder='email@address.com',
+        )
+        container.text_area(
+            'Your message',
+            label_visibility='collapsed',
+            placeholder='Your message',
+        )
+        container.button('Send', use_container_width=True)
+
+    container.markdown('---')
+
+
+def show_benefits(container):
+    container.header('Key benefits')
+
+    left_column, right_column = container.columns(2)
+
+    left_column.markdown(
+        """
+        <div class="container">
+            <div class="row justify-content-evenly">
+                <div class="col">
+                    <img class="d-block m-auto" style="width: 105px" src="data:image/png;base64,{0}" />
+                </div>
+                <div class="col">
+                    <h4>Various types of conditions</h4>
+                    <p>Temperature, pressure, solvent, catalyst and reagent are available for every reaction</p>
+                </div>
+            </div>
+        </div>
+        """.format(
+            load_image_bytes('images/various_types_of_conditions.png'),
+        ),
+        unsafe_allow_html=True,
+    )
+
+    right_column.markdown(
+        """
+        <div class="container">
+            <div class="row justify-content-evenly">
+                <div class="col">
+                    <img class="m-auto d-block" style="width: 105px" src="data:image/png;base64,{0}" />
+                </div>
+                <div class="col">
+                    <h4>Yield ranking</h4>
+                    <p>Best product yields are located above</p>
+                </div>
+            </div>
+        </div>
+        """.format(
+            load_image_bytes('images/yield_ranking.png'),
+        ),
+        unsafe_allow_html=True,
+    )
+
+    left_column, right_column = container.columns(2)
+
+    left_column.markdown(
+        """
+        <div class="container">
+            <div class="row justify-content-evenly">
+                <div class="col">
+                    <img class="m-auto d-block" style="width: 105px" src="data:image/png;base64,{0}" />
+                </div>
+                <div class="col">
+                    <h4>Convenient request</h4>
+                    <p>Input your molecule in SMILES, CAS registry number and IUPAC name formats</p>
+                </div>
+            </div>
+        </div>
+        """.format(
+            load_image_bytes('images/convenient_request.png'),
+        ),
+        unsafe_allow_html=True,
+    )
+
+    right_column.markdown(
+        """
+        <div class="container">
+            <div class="row justify-content-evenly">
+                <div class="col">
+                    <img class="m-auto d-block" style="width: 105px" src="data:image/png;base64,{0}" />
+                </div>
+                <div class="col">
+                    <h4>Fast predictions</h4>
+                    <p>Conditions selection is carried out within a few seconds</p>
+                </div>
+            </div>
+        </div>
+        """.format(
+            load_image_bytes('images/fast_predictions.png'),
+        ),
+        unsafe_allow_html=True,
+    )
+
+    container.markdown('---')
+
+
+def show_team(container):
+    container.header('Our team')
+
+    left_column, right_column = container.columns(2)
+
+    left_column.markdown(
+        """
+        <div class="container">
+            <div class="row justify-content-around">
+                <div class="col">
+                    <img class="w-75 m-auto d-block" src="data:image/png;base64,{0}" />
+                </div>
+                <div class="col align-self-center">
+                    <h4>Anastasiia Lavrinenko</h4>
+                    <p>Project curator<br/>Domain expert</p>
+                </div>
+            </div>
+        </div>
+        """.format(
+            load_image_bytes('images/anastasiia_lavrinenko.png'),
+        ),
+        unsafe_allow_html=True,
+    )
+
+    right_column.markdown(
+        """
+        <div class="container">
+            <div class="row justify-content-around">
+                <div class="col">
+                    <img class="w-75 m-auto d-block" src="data:image/png;base64,{0}" />
+                </div>
+                <div class="col align-self-center">
+                    <h4>Anastasia Orlova</h4>
+                    <p>Domain expert<br/>Data scientist</p>
+                </div>
+            </div>
+        </div>
+        """.format(
+            load_image_bytes('images/anastasiia_orlova.png'),
+        ),
+        unsafe_allow_html=True,
+    )
+
+    left_column, right_column = container.columns(2)
+
+    left_column.markdown(
+        """
+        <div class="container mt-5">
+            <div class="row justify-content-around">
+                <div class="col">
+                    <img class="w-75 m-auto d-block" src="data:image/png;base64,{0}" />
+                </div>
+                <div class="col align-self-center">
+                    <h4>Ksenia Nikitina</h4>
+                    <p>Domain expert<br/>Data scientist</p>
+                </div>
+            </div>
+        </div>
+        """.format(
+            load_image_bytes('images/ksenia_nikitina.png'),
+        ),
+        unsafe_allow_html=True,
+    )
+
+    right_column.markdown(
+        """
+        <div class="container mt-5">
+            <div class="row justify-content-around">
+                <div class="col">
+                    <img class="w-75 m-auto d-block" src="data:image/png;base64,{0}" />
+                </div>
+                <div class="col align-self-center">
+                    <h4>Egor Sergeenko</h4>
+                    <p>Developer<br/>Data scientist</p>
+                </div>
+            </div>
+        </div>
+        """.format(
+            load_image_bytes('images/egor_sergeenko.png'),
+        ),
+        unsafe_allow_html=True,
+    )
+
+    container.markdown('---')
 
 
 def add_scripts():
@@ -53,9 +292,20 @@ def add_scripts():
 def show_prediction_form(container, reactions):
     container.header('Demo')
 
-    options = reactions['name'].unique().tolist()
-    product = container.selectbox(options=options, label='Product')
-    clicked = container.button('Predict', use_container_width=True)
+    search_by_container, product_container = container.columns(2)
+    with container.form(key='predict_form'):
+        search_by = search_by_container.selectbox(
+            options=['IUPAC name', 'CAS number', 'SMILES'], label='Search by',
+        )
+        options = reactions['name'].unique().tolist()
+        if search_by != 'IUPAC name':
+            options = PRODUCT_MAPPING[search_by].keys()
+        product = product_container.selectbox(
+            options=options, label='Product',
+        )
+        if search_by != 'IUPAC name':
+            product = PRODUCT_MAPPING[search_by][product]
+        clicked = container.button('Predict', use_container_width=True)
 
     container.markdown('---')
 
@@ -126,13 +376,21 @@ def show_description(container):
     text_column.markdown(
         """
         <div class="w-100 d-flex justify-content-start">
-            <button class="btn btn-lg btn-outline-success" style="width: 40%">
+            <a id="demo_button" href="#demo" role="button" class="btn btn-lg btn-outline-success text-decoration-none" style="width: 40%;">
                 Demo
-            </button>
+            </a>
             <div style="width: 3%"></div>
             <button class="btn btn-lg btn-outline-secondary" style="width: 40%">
                 Sing Up
             </button>
+            <style>
+                #demo_button:hover {
+                    color: white;
+                }
+                #demo_button {
+                    color: #198754;
+                }
+            </style>
         </div>
         """,
         unsafe_allow_html=True,
